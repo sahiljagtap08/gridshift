@@ -59,7 +59,7 @@ async def test_under_delivery_hits_first_round_only(store):
     adapter.under_delivery = True
     r1 = await adapter.execute_action(make_action("workload_synthetic", "suspend"))
     expected = 2.4 - 0.12
-    assert (2.4 - r1.new_power_mw) == pytest.approx(expected * 0.85, rel=1e-3)
+    assert (2.4 - r1.new_power_mw) == pytest.approx(expected * 0.75, rel=1e-3)
     adapter.mark_plan_executed()
     r2 = await adapter.execute_action(make_action("workload_eval", "suspend"))
     assert (1.1 - r2.new_power_mw) > 1.045 * 0.9

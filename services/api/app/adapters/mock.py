@@ -8,7 +8,7 @@ Demo power model (spec 21.3), explicitly an assumption:
 
 After an action the *actual* reduction differs slightly from the estimate
 (seeded noise, spec 21.4). The under-delivery toggle makes the first plan land
-at ~85% of expectation so the closed loop has something to correct.
+at ~75% of expectation so the closed loop has something to correct.
 """
 
 from __future__ import annotations
@@ -21,6 +21,7 @@ from app.core.store import Store, now
 from app.models import Action, Workload
 
 SUSPEND_RESIDUAL = 0.05
+UNDER_DELIVERY_FACTOR = 0.75
 POWER_MODEL_NOTE = "running=100%, throttle p=(1-p), suspended=5% residual, deferred=0. Demo assumption."
 
 
@@ -122,7 +123,7 @@ class MockAdapter:
         # Actual response differs from the model: seeded noise, optional under-delivery on first plan.
         factor = self.rng.uniform(0.94, 1.02)
         if self.under_delivery and not self._under_delivery_used:
-            factor = 0.85
+            factor = UNDER_DELIVERY_FACTOR
         modeled_reduction = w.current_power_mw - modeled
         actual_power = w.current_power_mw - modeled_reduction * factor
         self._response_factor[w.id] = factor
