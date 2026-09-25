@@ -1,0 +1,95 @@
+@import "tailwindcss";
+
+:root {
+  --canvas: #f7f6f0;
+  --surface: #fdfcf8;
+  --ink: #1c1d1a;
+  --muted: #74756e;
+  --teal-dark: #315460;
+  --teal: #2f797a;
+  --aqua: #94c6c3;
+  --beige: #e8e8db;
+  --signal: #d1c81c;
+  --signal-ink: #5f5a05;
+  --success: #297e4e;
+  --risk: #9b3f37;
+  --border: #d9d9cf;
+  --border-strong: #c3c3b6;
+}
+
+@theme inline {
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-teal-dark: var(--teal-dark);
+  --color-teal: var(--teal);
+  --color-aqua: var(--aqua);
+  --color-beige: var(--beige);
+  --color-signal: var(--signal);
+  --color-signal-ink: var(--signal-ink);
+  --color-success: var(--success);
+  --color-risk: var(--risk);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, "SF Mono", Menlo, monospace;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background: var(--canvas);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+.num {
+  font-variant-numeric: tabular-nums;
+}
+
+.mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+*:focus-visible {
+  outline: 2px solid var(--teal);
+  outline-offset: 2px;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+@keyframes pulse-dot {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+
+.live-dot {
+  animation: pulse-dot 1.6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .live-dot {
+    animation: none;
+  }
+  * {
+    transition-duration: 0ms !important;
+  }
+}
