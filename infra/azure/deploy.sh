@@ -41,7 +41,7 @@ echo "API: https://$API_FQDN"
 echo "==> deploying web"
 az containerapp up -n "$WEB_APP" -g "$RG" -l "$LOCATION" --environment "$ENV_NAME" \
   --source apps/web --ingress external --target-port 3000 \
-  --env-vars "NEXT_PUBLIC_API_BASE_URL=https://$API_FQDN/api/v1" \
+  --env-vars "API_UPSTREAM=https://$API_FQDN" \
   -o none
 WEB_FQDN=$(az containerapp show -n "$WEB_APP" -g "$RG" --query properties.configuration.ingress.fqdn -o tsv)
 az containerapp update -n "$WEB_APP" -g "$RG" --min-replicas 1 --max-replicas 1 -o none

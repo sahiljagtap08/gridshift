@@ -13,8 +13,9 @@ import type {
   Workload,
 } from "./types";
 
-export const API_BASE =
-  process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000/api/v1";
+// Direct API URL when set at build time; otherwise the same-origin /backend proxy,
+// which reads API_UPSTREAM at runtime (see app/backend/[...path]/route.ts).
+export const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? "/backend";
 
 export class ApiError extends Error {
   status: number;
