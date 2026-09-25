@@ -77,20 +77,25 @@ class FoundryPolicyParser:
 
 # ---- offline fallback --------------------------------------------------------
 
-_DURATION = re.compile(
-    r"(?:up to|for|within|at most|maximum of)?\s*(\d+(?:\.\d+)?|one|two|three|four|six|twelve)\s*(hour|hr|minute|min)s?",
-    re.I,
-)
 _WORDS = {"one": 1, "two": 2, "three": 3, "four": 4, "six": 6, "twelve": 12}
+_NUM = r"(\d+(?:\.\d+)?|one|two|three|four|six|twelve)"
+_DURATION_PATTERNS = [
+    re.compile(rf"(?:up to|for|lasting|events? of|maximum of|at most)\s*{_NUM}[\s-]*(hour|hr|minute|min)s?", re.I),
+    re.compile(rf"{_NUM}-(hour|minute)\b", re.I),
+]
+
+
+def _to_minutes(raw: str, unit: str) -> int:
+    n = float(_WORDS.get(raw.lower(), raw if raw.replace(".", "", 1).isdigit() else 0))
+    return int(n * 60) if unit.lower().startswith("h") else int(n)
 
 
 def _minutes(text: str) -> int | None:
-    m = _DURATION.search(text)
-    if not m:
-        return None
-    raw, unit = m.group(1).lower(), m.group(2).lower()
-    n = float(_WORDS.get(raw, raw if raw.replace(".", "", 1).isdigit() else 0))
-    return int(n * 60) if unit.startswith("h") else int(n)
+    for pat in _DURATION_PATTERNS:
+        m = pat.search(text)
+        if m:
+            return _to_minutes(m.group(1), m.group(2))
+    return None
 
 
 def fallback_interpret(text: str) -> Interpretation:
@@ -153,6 +158,8 @@ def fallback_interpret(text: str) -> Interpretation:
         actions.append("throttle")
     if any(k in t for k in ("defer", "delay", "shift", "reschedule")):
         actions.append("defer")
+    if re.search(r"(do not|don't|never|no)\s+(pause|suspend|stop)", t):
+        actions = [a for a in actions if a != "suspend"]
     if not actions:
         actions = ["suspend", "throttle", "defer"]
         ambiguities.append(Ambiguity(field="allowed_actions", reason="text does not restrict how load may be reduced; all actions assumed"))

@@ -1,0 +1,52 @@
+[
+  {
+    "id": "explicit_percent_and_duration",
+    "text": "During declared grid stress events, participating large-load customers should reduce non-critical electricity demand by 15% for up to two hours while protecting critical customer-facing services.",
+    "expect": {"reduction_type": "percent_of_baseline", "reduction_value": 15, "duration_minutes": 120, "trigger": "declared_grid_stress_event", "protected_includes": ["critical_inference"], "ambiguous_fields_include": ["response_time_minutes"]}
+  },
+  {
+    "id": "absolute_mw_target",
+    "text": "Participants commit to curtail at least 2 MW of flexible AI training and batch load within 10 minutes of a utility dispatch instruction, for events lasting up to 4 hours.",
+    "expect": {"reduction_type": "absolute_mw", "reduction_value": 2, "duration_minutes": 240, "response_time_minutes": 10, "trigger": "utility_dispatch", "flexible_includes": ["training", "batch"]}
+  },
+  {
+    "id": "missing_duration",
+    "text": "Large-load customers shall reduce non-critical consumption by 10 percent when the grid operator declares an emergency. Production inference must not be interrupted.",
+    "expect": {"reduction_type": "percent_of_baseline", "reduction_value": 10, "duration_minutes": null, "ambiguous_fields_include": ["duration_minutes"], "protected_includes": ["critical_inference"]}
+  },
+  {
+    "id": "ambiguous_protected_clause",
+    "text": "Reduce load by 20% for three hours during grid stress. Important workloads should be preserved where reasonable.",
+    "expect": {"reduction_value": 20, "duration_minutes": 180, "ambiguous_fields_include": ["protected_workload_classes"]}
+  },
+  {
+    "id": "no_trigger",
+    "text": "Enrolled data centers agree to shed 12% of load for up to 90 minutes, pausing evaluation and synthetic data jobs first.",
+    "expect": {"reduction_value": 12, "duration_minutes": 90, "ambiguous_fields_include": ["trigger"], "flexible_includes": ["evaluation", "synthetic_data"], "allowed_includes": ["suspend"]}
+  },
+  {
+    "id": "throttle_only",
+    "text": "When prices exceed the threshold, throttle model training by up to 25% for two hours. Do not pause or stop any job.",
+    "expect": {"reduction_value": 25, "duration_minutes": 120, "trigger": "price_signal", "allowed_includes": ["throttle"], "allowed_excludes": ["suspend"]}
+  },
+  {
+    "id": "automatic_curtailment",
+    "text": "The site will automatically reduce non-critical load by 8% for 60 minutes upon a declared grid stress event, protecting safety systems and customer-facing inference.",
+    "expect": {"reduction_value": 8, "duration_minutes": 60, "operator_approval_required": false, "protected_includes": ["critical_inference", "safety_systems"]}
+  },
+  {
+    "id": "multiple_conditions",
+    "text": "Reduce 15% for up to 2 hours during grid stress; respond within 15 minutes; embeddings and batch indexing may be delayed; training may be throttled; production inference is protected.",
+    "expect": {"reduction_value": 15, "duration_minutes": 120, "response_time_minutes": 15, "allowed_includes": ["defer", "throttle"], "protected_includes": ["critical_inference"]}
+  },
+  {
+    "id": "no_target",
+    "text": "Participants should make reasonable efforts to reduce electricity use during grid stress events for up to two hours.",
+    "expect": {"ambiguous_fields_include": ["reduction_target"], "duration_minutes": 120}
+  },
+  {
+    "id": "shift_language",
+    "text": "Shift at least 1.5 MW of deferrable AI compute out of the 4-hour peak window when requested by the utility, keeping latency-sensitive services running.",
+    "expect": {"reduction_type": "absolute_mw", "reduction_value": 1.5, "duration_minutes": 240, "trigger": "utility_dispatch", "allowed_includes": ["defer"], "protected_includes": ["critical_inference"]}
+  }
+]
