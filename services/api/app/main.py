@@ -5,7 +5,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import clusters, events
+from app.api import clusters, events, policies
 from app.core.config import get_settings
 from app.core.deps import get_orchestrator
 from app.core.seed import seed_demo
@@ -38,6 +38,7 @@ def create_app() -> FastAPI:
 
     app.include_router(clusters.router, prefix="/api/v1")
     app.include_router(events.router, prefix="/api/v1")
+    app.include_router(policies.router, prefix="/api/v1")
     return app
 
 
