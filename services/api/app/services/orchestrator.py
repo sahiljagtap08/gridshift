@@ -354,7 +354,13 @@ class Orchestrator:
         priority = {"critical": 0, "high": 1, "medium": 2, "low": 3}
         actions.sort(key=lambda a: (priority[self.store.workloads[a.workload_id].criticality], a.workload_id))
         restored = 0
+        done: set[str] = set()
         for a in actions:
+            if a.workload_id in done:
+                a.status = "RESTORED"
+                a.restored_at = now()
+                continue
+            done.add(a.workload_id)
             r = await adapter.rollback_action(a)
             a.status = "RESTORED" if r.ok else a.status
             a.restored_at = now()
