@@ -68,7 +68,7 @@ def demo_workloads(cluster_id: str = CLUSTER_ID) -> list[Workload]:
             protected=False,
             checkpointable=False,
             max_pause_minutes=180,
-            deadline_at=t0 + timedelta(hours=6),
+            deadline_at=t0 + timedelta(minutes=90),
             allowed_actions=["defer"],
             owner="search",
             labels={"class": "embeddings"},
