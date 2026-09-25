@@ -37,7 +37,7 @@ Rule -> observe -> plan -> approve -> act -> measure -> verify -> restore
 
 1. A grid event arrives: *"reduce 10% for 2 hours."*
 2. GridShift snapshots current workloads and power telemetry.
-3. A deterministic optimizer builds the least-disruptive plan that meets the target. Protected workloads are a hard gate and can never be selected.
+3. A deterministic optimizer builds the least-disruptive plan that meets the target, checking allowed actions, max pause, throttle limits, and deadlines. Protected workloads are a hard gate and can never be selected.
 4. The operator reviews exactly what will change and approves.
 5. Actions execute through a scheduler adapter (mock adapter for the demo; Kubernetes Job suspend/resume is the first real actuator).
 6. Power telemetry is measured continuously. **Expected** and **measured** reduction are always separate numbers.
@@ -66,7 +66,9 @@ Modeled site: **Virginia AI Campus, 12.6 MW**
 | Evaluations | 1.1 MW | No | suspend |
 | Synthetic data | 2.4 MW | No | suspend |
 
-Event: 10% reduction for 120 minutes, target **1.26 MW**. The optimizer touches three flexible workloads for an expected **1.71 MW**, with **zero** critical workloads affected. The live chart shows measured load falling past the target line, then a staged restore.
+Event: 10% reduction for 120 minutes, target **1.26 MW**. The optimizer picks the least-disruptive combination: throttle training by 10% and suspend the checkpointed evaluation suite, for an expected **1.50 MW**, with **zero** critical workloads affected. The embeddings job is excluded automatically because its deadline falls inside the event window. The live chart shows measured load falling past the target line, then a staged restore.
+
+Toggle **Simulate under-delivery** and the first plan lands short. GridShift reports the shortfall honestly, replans only the gap (raise the training throttle to 25%), asks for approval again, and then verifies the target.
 
 ## Architecture
 
@@ -132,6 +134,20 @@ npm run dev
 
 Open http://localhost:3000. The demo site and workloads are seeded automatically with a fixed random seed so the presentation is repeatable.
 
+Without Foundry credentials the policy parser uses a labelled offline fallback so the demo still runs; the UI shows which interpreter produced each rule version.
+
+```bash
+# run the whole Live Ops loop from the terminal
+python scripts/run_demo_event.py --under-delivery
+
+# backend tests and the policy-interpretation eval set
+cd services/api && .venv/bin/python -m pytest -q
+.venv/bin/python ../../scripts/foundry_eval.py
+
+# deploy both services to Azure Container Apps
+az login && ./infra/azure/deploy.sh
+```
+
 ## Repository layout
 
 ```
@@ -139,8 +155,8 @@ gridshift/
 ├── apps/web/          Next.js UI
 ├── services/api/      FastAPI control plane, optimizer, simulator, adapters
 ├── docs/              architecture, demo script, policy schema
-├── infra/             optional k8s demo manifests and Azure deployment
-└── scripts/           seed and demo helpers
+├── infra/azure/       Azure Container Apps deployment
+└── scripts/           demo runner and Foundry eval
 ```
 
 ## Why this is feasible
