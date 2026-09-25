@@ -83,8 +83,8 @@ class MockAdapter:
         return sum(w.current_power_mw for w in self.store.workloads_for_cluster(self.cluster_id))
 
     def sample_noise(self) -> float:
-        """Small telemetry jitter, +-0.5%."""
-        return self.rng.uniform(-0.005, 0.005)
+        """Small telemetry jitter, +-0.15%."""
+        return self.rng.uniform(-0.0015, 0.0015)
 
     # ---- actuation ---------------------------------------------------
 
