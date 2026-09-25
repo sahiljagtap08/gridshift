@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { ActionStatus, EventStatus, WorkloadState } from "@/lib/types";
+import type { ActionStatus, EventStatus, PolicyVersionStatus, WorkloadState } from "@/lib/types";
 
 export function Card({
   children,
@@ -218,3 +218,16 @@ export function Field({ label, children, hint }: { label: string; children: Reac
 
 export const inputCls =
   "w-full rounded-md border border-border-strong bg-surface px-3 py-2 text-[13px] text-ink transition-colors duration-150 ease-out hover:border-muted focus:border-teal disabled:bg-beige/50";
+
+const policyTone: Record<PolicyVersionStatus, keyof typeof tone> = {
+  AI_INTERPRETED: "signal",
+  HUMAN_CONFIRMED: "teal",
+  SIMULATED: "teal",
+  EXTERNALLY_APPROVED: "teal",
+  ACTIVE: "success",
+  RETIRED: "neutral",
+};
+
+export function PolicyStatusBadge({ status }: { status: PolicyVersionStatus }) {
+  return <Badge tone={policyTone[status]}>{status.replace(/_/g, " ")}</Badge>;
+}
