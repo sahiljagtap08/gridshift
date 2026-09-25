@@ -5,7 +5,9 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.api import clusters, events
 from app.core.config import get_settings
+from app.core.deps import get_orchestrator
 from app.core.seed import seed_demo
 from app.core.store import get_store
 
@@ -13,7 +15,10 @@ from app.core.store import get_store
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     seed_demo(get_store())
+    orch = get_orchestrator()
+    orch.start_telemetry()
     yield
+    await orch.stop()
 
 
 def create_app() -> FastAPI:
@@ -31,6 +36,8 @@ def create_app() -> FastAPI:
     async def health() -> dict:
         return {"status": "ok", "foundry_configured": settings.foundry_configured}
 
+    app.include_router(clusters.router, prefix="/api/v1")
+    app.include_router(events.router, prefix="/api/v1")
     return app
 
 
