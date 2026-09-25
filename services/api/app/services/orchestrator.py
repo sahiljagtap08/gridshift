@@ -170,6 +170,7 @@ class Orchestrator:
             disruption_score=result.disruption_score, status="AWAITING_APPROVAL" if result.feasible else "INFEASIBLE",
             actions=optimizer.to_actions(result, plan_id, self.store.new_id),
             protected_workload_ids=[w.id for w in workloads if w.protected],
+            exclusions=[e.__dict__ for e in result.exclusions],
             infeasible_reason=result.infeasible_reason, created_at=now(),
         )
         self.store.plans[plan.id] = plan

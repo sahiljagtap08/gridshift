@@ -89,6 +89,7 @@ class ActionPlan(BaseModel):
     status: PlanStatus
     actions: list[Action]
     protected_workload_ids: list[str]
+    exclusions: list[dict[str, str]] = Field(default_factory=list, description="Workload/action pairs ruled out and why")
     infeasible_reason: str | None = None
     created_at: datetime
 
