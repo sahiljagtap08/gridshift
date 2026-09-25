@@ -64,7 +64,7 @@ export default function LiveOpsPage() {
   }, [refreshEvent]);
 
   useEffect(() => {
-    refreshOverview();
+    void Promise.resolve().then(refreshOverview);
   }, [refreshOverview]);
 
   const onEvent = useCallback(

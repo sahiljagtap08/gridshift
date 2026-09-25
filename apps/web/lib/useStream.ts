@@ -8,7 +8,9 @@ import type { StreamMessage } from "./types";
 export function useStream(onMessage: (msg: StreamMessage) => void) {
   const [connected, setConnected] = useState(false);
   const handler = useRef(onMessage);
-  handler.current = onMessage;
+  useEffect(() => {
+    handler.current = onMessage;
+  }, [onMessage]);
 
   useEffect(() => {
     const es = new EventSource(`${API_BASE}/stream`);
