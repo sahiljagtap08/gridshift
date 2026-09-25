@@ -101,7 +101,7 @@ export default function NewPolicyPage() {
           <div className="mt-4 flex items-center justify-between">
             <span className="text-xs text-muted">Sent to Foundry with a strict JSON schema. No credentials, no cluster data.</span>
             {step === "text" ? (
-              <Button variant="primary" onClick={interpret} disabled={busy !== null || !text.trim()}>
+              <Button variant="primary" className="whitespace-nowrap" onClick={interpret} disabled={busy !== null || !text.trim()}>
                 {busy === "interpret" ? "Interpreting…" : "Interpret rule"}
               </Button>
             ) : (

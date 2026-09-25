@@ -123,6 +123,7 @@ export interface ActionPlan {
   status: PlanStatus;
   actions: Action[];
   protected_workload_ids: string[];
+  exclusions: { workload_id: string; workload_name: string; action_type: string; reason: string }[];
   infeasible_reason: string | null;
   created_at: string;
 }

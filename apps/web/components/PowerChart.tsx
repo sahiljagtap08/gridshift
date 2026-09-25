@@ -58,7 +58,6 @@ export function PowerChart({
               tickLine={false}
               width={44}
               tickFormatter={(v: number) => `${v.toFixed(1)}`}
-              label={{ value: "MW", position: "insideTopLeft", fontSize: 11, fill: "#74756e", dy: -10 }}
             />
             <Tooltip
               contentStyle={{

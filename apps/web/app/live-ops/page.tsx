@@ -308,6 +308,21 @@ function ApprovalView({
               ))}
             </ul>
           </div>
+          {(plan.exclusions ?? []).filter((e) => !plan.protected_workload_ids.includes(e.workload_id)).length > 0 && (
+            <div className="mt-3 rounded-md border border-border px-4 py-3">
+              <div className="text-xs text-muted">Not eligible for this event</div>
+              <ul className="mt-1 space-y-1 text-[13px]">
+                {(plan.exclusions ?? [])
+                  .filter((e) => !plan.protected_workload_ids.includes(e.workload_id))
+                  .map((e) => (
+                    <li key={`${e.workload_id}-${e.action_type}`} className="flex items-baseline justify-between gap-4">
+                      <span>{e.workload_name} <span className="mono text-[11px] text-muted">{e.action_type}</span></span>
+                      <span className="text-right text-xs text-muted">{e.reason}</span>
+                    </li>
+                  ))}
+              </ul>
+            </div>
+          )}
         </div>
 
         <div className="border-l border-border p-6">
@@ -470,11 +485,11 @@ function ExecutionView({
           <ul className="space-y-2.5">
             {workloads.map((w) => (
               <li key={w.id} className={`flex items-center justify-between rounded-md px-2 py-1.5 transition-colors duration-300 ease-out ${touched.has(w.id) && w.state !== "running" ? "bg-[#f3efb9]/40" : ""}`}>
-                <span className="flex items-center gap-2 text-[13px]">
+                <span className="flex min-w-0 items-center gap-2 text-[13px]">
                   {w.name}
                   {w.protected && <Badge tone="ink">PROTECTED</Badge>}
                 </span>
-                <span className="flex items-center gap-3">
+                <span className="flex shrink-0 items-center gap-3">
                   <span className="num text-xs text-muted">{mw(w.current_power_mw)}</span>
                   {stateBadge(w.state, w.throttle_percent)}
                 </span>
