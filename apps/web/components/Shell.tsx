@@ -7,6 +7,7 @@ import { useStream } from "@/lib/useStream";
 const NAV = [
   { href: "/", label: "Overview" },
   { href: "/live-ops", label: "Live Ops" },
+  { href: "/facility", label: "Facility" },
   { href: "/policy-lab", label: "Policy Lab" },
   { href: "/programs", label: "Programs" },
   { href: "/workloads", label: "Workloads" },
