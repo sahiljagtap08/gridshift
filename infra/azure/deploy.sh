@@ -78,9 +78,29 @@ echo "==> deploying web"
 WEB_FQDN=$(deploy_app "$WEB_APP" "$ACR_SERVER/gridshift-web:$TAG" 3000 \
   "API_UPSTREAM=https://$API_FQDN")
 
-az containerapp update -n "$API_APP" -g "$RG" --set-env-vars "CORS_ORIGINS=https://$WEB_FQDN" -o none
+# ---- readable front door: App Service pointing at the same web image -------
+FRONT_APP="${FRONT_APP:-gridshift}"
+PLAN="${PLAN:-gridshift-plan}"
+if ! az appservice plan show -n "$PLAN" -g "$RG" -o none 2>/dev/null; then
+  az appservice plan create -n "$PLAN" -g "$RG" -l "$LOCATION" --is-linux --sku B1 -o none
+fi
+if ! az webapp show -n "$FRONT_APP" -g "$RG" -o none 2>/dev/null; then
+  az webapp create -n "$FRONT_APP" -g "$RG" -p "$PLAN" --container-image-name "$ACR_SERVER/gridshift-web:$TAG" -o none
+  az webapp update -n "$FRONT_APP" -g "$RG" --https-only true -o none
+fi
+az webapp config container set -n "$FRONT_APP" -g "$RG" \
+  --container-image-name "$ACR_SERVER/gridshift-web:$TAG" \
+  --container-registry-url "https://$ACR_SERVER" --container-registry-user "$ACR_USER" \
+  --container-registry-password "$ACR_PASS" -o none
+az webapp config appsettings set -n "$FRONT_APP" -g "$RG" \
+  --settings "API_UPSTREAM=https://$API_FQDN" "WEBSITES_PORT=3000" -o none
+az webapp restart -n "$FRONT_APP" -g "$RG" -o none
+FRONT_FQDN=$(az webapp show -n "$FRONT_APP" -g "$RG" --query defaultHostName -o tsv)
+
+az containerapp update -n "$API_APP" -g "$RG" \
+  --set-env-vars "CORS_ORIGINS=https://$FRONT_FQDN,https://$WEB_FQDN" -o none
 
 echo
 echo "GridShift is live:"
-echo "  web: https://$WEB_FQDN"
-echo "  api: https://$API_FQDN/health"
+echo "  web: https://$FRONT_FQDN"
+echo "  (container apps web: https://$WEB_FQDN, api: https://$API_FQDN/health)"

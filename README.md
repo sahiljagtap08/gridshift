@@ -8,8 +8,7 @@ Built for the **Microsoft + CCI Innovation Challenge for Virginia** (September 2
 
 | | |
 |---|---|
-| Live demo | https://gridshift-web.wonderfulisland-4ca2f314.westus.azurecontainerapps.io |
-| Live API | https://gridshift-api.wonderfulisland-4ca2f314.westus.azurecontainerapps.io/health |
+| Live demo | **https://gridshift.azurewebsites.net** |
 | Repository | https://github.com/sahiljagtap08/gridshift |
 | Backend tests | 36 passing (`services/api/tests`) |
 | Foundry eval set | 10/10 with `gpt-4.1-mini` (`scripts/foundry_eval.py`) |
@@ -213,7 +212,7 @@ flowchart TB
 
 ```mermaid
 flowchart LR
-    Browser --> Web[Next.js on Azure Container Apps]
+    Browser --> Web[Next.js on Azure App Service\ngridshift.azurewebsites.net]
     Web -->|/backend proxy| API[FastAPI on Azure Container Apps]
     API --> Foundry[Microsoft Foundry\ngpt-4.1-mini]
     API --> Adapter[Scheduler adapter]
@@ -557,7 +556,7 @@ After an action the actual response is the modeled reduction scaled by a seeded 
 | Optimization | Deterministic exhaustive least-disruption search (OR-Tools on the roadmap) |
 | Telemetry | Seeded simulator; designed for Prometheus + NVIDIA DCGM Exporter |
 | Actuation | Mock scheduler adapter; Kubernetes Job `spec.suspend` adapter next |
-| Hosting | Azure Container Apps (API and web), Docker Compose locally |
+| Hosting | Azure App Service front door, Azure Container Apps (API), Azure Container Registry, Docker Compose locally |
 
 ## 14. Running locally
 
@@ -593,7 +592,7 @@ az login
 LOCATION=westus ./infra/azure/deploy.sh
 ```
 
-The script creates a resource group and Container Apps environment, builds both images from source in the cloud, wires the web app to the API through a runtime proxy (`apps/web/app/backend/[...path]/route.ts`, which also streams SSE), and prints the public URLs. Foundry settings are read from `.env`. The Foundry resource itself was created with:
+The script builds both images locally (Azure for Students subscriptions do not permit ACR cloud builds), pushes them to Azure Container Registry, deploys the API and web to Container Apps, and points the App Service front door (`gridshift.azurewebsites.net`) at the new web image. The browser only ever talks to the web app; it reaches the API through a runtime proxy (`apps/web/app/backend/[...path]/route.ts`) that also streams Server-Sent Events. Foundry settings are read from `.env`. The Foundry resource itself was created with:
 
 ```bash
 az cognitiveservices account create -n gridshift-foundry -g gridshift-rg -l westus --kind AIServices --sku S0
