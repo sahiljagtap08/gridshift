@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useStream } from "@/lib/useStream";
 
 const NAV = [
-  { href: "/", label: "Overview" },
+  { href: "/overview", label: "Overview" },
   { href: "/live-ops", label: "Live Ops" },
   { href: "/facility", label: "Facility" },
   { href: "/policy-lab", label: "Policy Lab" },
@@ -18,18 +18,20 @@ export function Shell({ children }: { children: React.ReactNode }) {
   const path = usePathname();
   const connected = useStream(() => {});
 
+  if (path === "/") return <>{children}</>;
+
   return (
     <div className="flex min-h-full">
       <aside className="fixed inset-y-0 left-0 flex w-56 flex-col border-r border-border bg-beige/60">
         <div className="px-6 pt-7 pb-8">
-          <Link href="/" className="text-[15px] font-semibold tracking-[0.18em] text-ink">
+          <Link href="/overview" className="text-[15px] font-semibold tracking-[0.18em] text-ink">
             GRIDSHIFT
           </Link>
           <p className="mt-1 text-xs text-muted">Grid-responsive control</p>
         </div>
         <nav className="flex flex-1 flex-col gap-0.5 px-3">
           {NAV.map((n) => {
-            const active = n.href === "/" ? path === "/" : path.startsWith(n.href);
+            const active = path.startsWith(n.href);
             return (
               <Link
                 key={n.href}
