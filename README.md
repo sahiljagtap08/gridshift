@@ -8,7 +8,8 @@ Built for the **Microsoft + CCI Innovation Challenge for Virginia** (September 2
 
 | | |
 |---|---|
-| Live demo | _deploying to Azure Container Apps, link added on completion_ |
+| Live demo | https://gridshift-web.wonderfulisland-4ca2f314.westus.azurecontainerapps.io |
+| Live API | https://gridshift-api.wonderfulisland-4ca2f314.westus.azurecontainerapps.io/health |
 | Repository | https://github.com/sahiljagtap08/gridshift |
 | Backend tests | 36 passing (`services/api/tests`) |
 | Foundry eval set | 10/10 with `gpt-4.1-mini` (`scripts/foundry_eval.py`) |
