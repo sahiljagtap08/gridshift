@@ -32,8 +32,7 @@ az containerapp up -n "$API_APP" -g "$RG" -l "$LOCATION" --environment "$ENV_NAM
   --env-vars "CORS_ORIGINS=*" "DEMO_RANDOM_SEED=42" \
     "FOUNDRY_ENDPOINT=${FOUNDRY_ENDPOINT:-}" "FOUNDRY_API_KEY=${FOUNDRY_API_KEY:-}" \
     "FOUNDRY_MODEL_DEPLOYMENT=${FOUNDRY_MODEL_DEPLOYMENT:-gpt-4.1}" \
-    "FOUNDRY_API_VERSION=${FOUNDRY_API_VERSION:-2024-10-21}" \
-  -o none
+    "FOUNDRY_API_VERSION=${FOUNDRY_API_VERSION:-2024-10-21}"
 API_FQDN=$(az containerapp show -n "$API_APP" -g "$RG" --query properties.configuration.ingress.fqdn -o tsv)
 az containerapp update -n "$API_APP" -g "$RG" --min-replicas 1 --max-replicas 1 -o none
 echo "API: https://$API_FQDN"
@@ -41,8 +40,7 @@ echo "API: https://$API_FQDN"
 echo "==> deploying web"
 az containerapp up -n "$WEB_APP" -g "$RG" -l "$LOCATION" --environment "$ENV_NAME" \
   --source apps/web --ingress external --target-port 3000 \
-  --env-vars "API_UPSTREAM=https://$API_FQDN" \
-  -o none
+  --env-vars "API_UPSTREAM=https://$API_FQDN"
 WEB_FQDN=$(az containerapp show -n "$WEB_APP" -g "$RG" --query properties.configuration.ingress.fqdn -o tsv)
 az containerapp update -n "$WEB_APP" -g "$RG" --min-replicas 1 --max-replicas 1 -o none
 
