@@ -7,8 +7,7 @@ FROM node:20-alpine AS build
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-ARG NEXT_PUBLIC_API_BASE_URL=http://localhost:8000/api/v1
-ENV NEXT_PUBLIC_API_BASE_URL=$NEXT_PUBLIC_API_BASE_URL
+# Leave NEXT_PUBLIC_API_BASE_URL unset so the client uses the /backend runtime proxy.
 RUN npm run build
 
 FROM node:20-alpine AS run
