@@ -24,7 +24,8 @@ Read the proposed policy or program text and fill the PolicyRule schema.
 Rules:
 - Extract only what the text states or clearly implies. Do NOT invent operational values.
 - If duration, response time, trigger, or protected/flexible workload classes are not specified, leave the field null or empty AND add an entry to `ambiguities` naming the field and why.
-- reduction_target.type is "percent_of_baseline" when the text gives a percentage, "absolute_mw" when it gives megawatts.
+- reduction_target.type is "percent_of_baseline" when the text gives a percentage, "absolute_mw" when it gives megawatts. If the text gives NO number ("reasonable efforts", "reduce electricity use"), set value to 0 and add an ambiguity for field "reduction_target".
+- Vague protection language ("important workloads", "where reasonable", "critical services" without saying which) must produce an ambiguity for field "protected_workload_classes", even if you also map a best-guess class.
 - Map "critical customer-facing services", "production inference", "latency-sensitive APIs" to protected class critical_inference. Map safety/life-safety systems to safety_systems.
 - Map training, batch, evaluation/eval, embeddings, synthetic data generation to the matching flexible classes; "non-critical" alone implies training, batch, evaluation, embeddings, synthetic_data.
 - allowed_actions: include suspend/throttle/defer only if the text allows pausing, slowing, or delaying work; if the text is silent, include all three and record an ambiguity.
