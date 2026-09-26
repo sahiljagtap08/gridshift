@@ -7,6 +7,7 @@ import { mw, pct, minutes, clock } from "@/lib/format";
 import type { EventDetail, Overview, StreamMessage, TelemetrySample, Workload } from "@/lib/types";
 import { useTelemetry } from "@/lib/useTelemetry";
 import { EventModal } from "@/components/EventModal";
+import { FacilityView } from "@/components/facility/FacilityView";
 import { PlanTable } from "@/components/PlanTable";
 import { PowerChart } from "@/components/PowerChart";
 import { Timeline } from "@/components/Timeline";
@@ -138,6 +139,10 @@ export default function LiveOpsPage() {
       {notice && (
         <div className="mb-4 rounded-md border border-signal bg-[#f7f4cf] px-4 py-3 text-[13px] text-signal-ink">{notice}</div>
       )}
+
+      <div className="mb-6">
+        <FacilityView height={420} expandHref="/facility" fit={0.8} />
+      </div>
 
       {!ev && <IdleView live={live} workloads={workloads} />}
 
