@@ -773,9 +773,37 @@ export interface FacilitySceneProps {
   onHoverChange?: (t: HoverTarget | null) => void;
   /** Camera distance multiplier: <1 zooms in (used for the compact Live Ops card). */
   fit?: number;
+  /** Cinematic idle: slow auto-orbit, no interaction, no labels. Used on the landing page. */
+  ambient?: boolean;
 }
 
-function SceneContent({ state, hoverApi, projection, fit }: { state: FacilityState; hoverApi: HoverApi; projection: Projection; fit: number }) {
+/** Slow, eased orbit around the campus for ambient mode. ~60 s per cycle, respects reduced motion. */
+function AmbientOrbit({ fit = 1 }: { fit?: number }) {
+  const { camera, size } = useThree();
+  const reduced = useMemo(() => typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches, []);
+  const basePolar = 0.98;
+  const baseAzimuth = -0.2;
+  useFrame(({ clock }) => {
+    const cam = camera as THREE.PerspectiveCamera;
+    const vfov = THREE.MathUtils.degToRad(cam.fov);
+    const hfov = 2 * Math.atan(Math.tan(vfov / 2) * (size.width / size.height));
+    const half = Math.min(vfov, hfov) / 2;
+    const dist = (SCENE_RADIUS / Math.sin(half)) * fit;
+    const t = reduced ? 0 : clock.getElapsedTime();
+    const azimuth = baseAzimuth + Math.sin((t / 60) * Math.PI * 2) * 0.42;
+    const polar = basePolar + Math.sin((t / 60) * Math.PI * 4) * 0.04;
+    cam.position.set(
+      SCENE_CENTER.x + dist * Math.sin(polar) * Math.sin(azimuth),
+      SCENE_CENTER.y + dist * Math.cos(polar),
+      SCENE_CENTER.z + dist * Math.sin(polar) * Math.cos(azimuth),
+    );
+    cam.lookAt(SCENE_CENTER);
+    cam.updateProjectionMatrix();
+  });
+  return null;
+}
+
+function SceneContent({ state, hoverApi, projection, fit, ambient = false }: { state: FacilityState; hoverApi: HoverApi; projection: Projection; fit: number; ambient?: boolean }) {
   const { hover } = hoverApi;
 
   const groups = useMemo(() => layoutRacks(state.workloads), [state.workloads]);
@@ -854,20 +882,26 @@ function SceneContent({ state, hoverApi, projection, fit }: { state: FacilitySta
       <CalloutAnchor projection={projection} id="callout-substation" position={[SUBSTATION_CENTER[0], 3.6, SUBSTATION_CENTER[2] + 1.5]} />
       <Projector projection={projection} />
 
-      <FitCamera fit={fit} />
-      <OrbitControls
-        target={SCENE_CENTER}
-        enablePan={false}
-        enableDamping
-        dampingFactor={0.08}
-        minDistance={14}
-        maxDistance={80}
-        minPolarAngle={0.45}
-        maxPolarAngle={1.18}
-        minAzimuthAngle={-1.35}
-        maxAzimuthAngle={0.95}
-        makeDefault
-      />
+      {ambient ? (
+        <AmbientOrbit fit={fit} />
+      ) : (
+        <>
+          <FitCamera fit={fit} />
+          <OrbitControls
+            target={SCENE_CENTER}
+            enablePan={false}
+            enableDamping
+            dampingFactor={0.08}
+            minDistance={14}
+            maxDistance={80}
+            minPolarAngle={0.45}
+            maxPolarAngle={1.18}
+            minAzimuthAngle={-1.35}
+            maxAzimuthAngle={0.95}
+            makeDefault
+          />
+        </>
+      )}
     </>
   );
 }
@@ -947,7 +981,7 @@ function Overlay({ projection, hover, state, loadRatio }: { projection: Projecti
   );
 }
 
-export default function FacilityScene({ state, onHoverChange, fit = 1 }: FacilitySceneProps) {
+export default function FacilityScene({ state, onHoverChange, fit = 1, ambient = false }: FacilitySceneProps) {
   const hoverApi = useHover();
   const projection = useMemo(() => new Projection(), []);
   const { hover, unpin } = hoverApi;
@@ -961,12 +995,12 @@ export default function FacilityScene({ state, onHoverChange, fit = 1 }: Facilit
         dpr={[1, 1.75]}
         camera={{ position: [-8, 21, 40], fov: 26, near: 0.5, far: 220 }}
         gl={{ antialias: true, toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.02 }}
-        style={{ width: "100%", height: "100%" }}
+        style={{ width: "100%", height: "100%", pointerEvents: ambient ? "none" : "auto" }}
         onPointerMissed={unpin}
       >
-        <SceneContent state={state} hoverApi={hoverApi} projection={projection} fit={fit} />
+        <SceneContent state={state} hoverApi={hoverApi} projection={projection} fit={fit} ambient={ambient} />
       </Canvas>
-      <Overlay projection={projection} hover={hover} state={state} loadRatio={loadRatio} />
+      {!ambient && <Overlay projection={projection} hover={hover} state={state} loadRatio={loadRatio} />}
     </div>
   );
 }
