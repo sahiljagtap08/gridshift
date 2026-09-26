@@ -93,3 +93,15 @@ textarea {
     transition-duration: 0ms !important;
   }
 }
+
+/* Landing: cream fade over the ambient 3D scene so copy stays legible */
+.landing-fade {
+  background:
+    linear-gradient(90deg, #f7f6f0 0%, rgba(247, 246, 240, 0.92) 30%, rgba(247, 246, 240, 0.35) 52%, rgba(247, 246, 240, 0) 68%),
+    linear-gradient(180deg, rgba(247, 246, 240, 0.55) 0%, rgba(247, 246, 240, 0) 22%, rgba(247, 246, 240, 0) 78%, rgba(247, 246, 240, 0.7) 100%);
+}
+@media (max-width: 767px) {
+  .landing-fade {
+    background: linear-gradient(180deg, rgba(247, 246, 240, 0) 0%, rgba(247, 246, 240, 0) 38%, #f7f6f0 54%, #f7f6f0 100%);
+  }
+}
