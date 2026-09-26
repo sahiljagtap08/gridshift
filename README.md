@@ -213,7 +213,7 @@ flowchart TB
 | Verification | `services/api/app/services/verification.py` | Baseline minus measured; `UNVERIFIED` without telemetry |
 | Mock adapter | `services/api/app/adapters/mock.py` | Seeded cluster simulator: power model, action latency, noise, under-delivery, failure injection |
 | REST + SSE API | `services/api/app/api/` | Clusters, workloads, events, plans, policies, simulations, registry, audit, streams |
-| Web UI | `apps/web/` | Overview, Live Ops, Policy Lab, Programs, Workloads, Events |
+| Web UI | `apps/web/` | Landing, Overview, Live Ops with interactive 3D facility view, Policy Lab, Programs, Workloads, Events |
 
 ### Deployment boundary
 
@@ -557,7 +557,7 @@ After an action the actual response is the modeled reduction scaled by a seeded 
 
 | Layer | Choice |
 |---|---|
-| Frontend | Next.js 16, React 19, TypeScript, Tailwind CSS v4, Recharts, native EventSource for SSE |
+| Frontend | Next.js 16, React 19, TypeScript, Tailwind CSS v4, Recharts, React Three Fiber + drei for the 3D facility, native EventSource for SSE |
 | Backend | Python 3.12, FastAPI, Pydantic v2, sse-starlette |
 | AI | Microsoft Foundry model deployment (`gpt-4.1-mini`) via the OpenAI SDK with Structured Outputs |
 | Optimization | Deterministic exhaustive least-disruption search (OR-Tools on the roadmap) |
@@ -631,8 +631,9 @@ cd apps/web && npm run build && npm run lint
 ```
 gridshift/
 ├── apps/web/                 Next.js UI
-│   ├── app/                  routes: /, /live-ops, /workloads, /events, /programs, /policy-lab
+│   ├── app/                  routes: / (landing), /overview, /live-ops, /facility, /workloads, /events, /programs, /policy-lab
 │   ├── components/           Shell, PowerChart, PlanTable, Timeline, RuleCards, EventModal, ui
+│   ├── components/facility/  3D campus scene (React Three Fiber): racks, cooling, switchgear, substation
 │   └── lib/                  typed API client, types, SSE hook, formatting
 ├── services/api/             FastAPI control plane
 │   ├── app/models/           domain models
