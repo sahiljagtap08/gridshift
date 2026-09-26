@@ -9,6 +9,9 @@ Built for the **Microsoft + CCI Innovation Challenge for Virginia** (September 2
 | | |
 |---|---|
 | Live demo | **https://gridshift.azurewebsites.net** |
+| Executive Challenge | **Policy and Public Sentiment Analyst** |
+| Innovation Studio entry | https://innovationstudio.microsoft.com/hackathons/Microsoft-and-CCI-Innovation-Challenge-for-VA/project/126240 |
+| Team | Sahil and Nikhil, George Mason University |
 | Repository | https://github.com/sahiljagtap08/gridshift |
 | Backend tests | 36 passing (`services/api/tests`) |
 | Foundry eval set | 10/10 with `gpt-4.1-mini` (`scripts/foundry_eval.py`) |
@@ -89,6 +92,10 @@ Rule -> observe -> plan -> approve -> act -> measure -> verify -> restore
 6. Power telemetry is measured continuously. **Expected** and **measured** reduction are always separate numbers.
 7. If the target is missed, GridShift reports the shortfall, replans only the gap, and asks for approval again. It never claims success from API calls alone.
 8. When the event ends, workloads are restored in stages to avoid a rebound peak, and an auditable verification record is produced.
+
+### How this answers the "Policy and Public Sentiment Analyst" challenge
+
+Policy analysis tools usually stop at explaining a rule. GridShift's Policy Lab takes a proposed demand-flexibility rule written in plain language, turns it into a strict, machine-checkable constraint set with Microsoft Foundry, makes the analyst confirm every assumption, and then **tests the rule against a modeled data center**: is it feasible, which workloads would move, how many megawatts would it free, and what would make it fail. Each run is a versioned, reproducible evidence packet an analyst can bring to a stakeholder or regulatory process. The same confirmed rule then governs Live Ops, so the policy conversation and the operational result are the same object. That is the difference between analyzing policy and making it executable.
 
 ### What GridShift is not
 
